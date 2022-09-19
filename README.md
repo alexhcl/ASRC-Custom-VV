@@ -28,7 +28,7 @@ variables:
 - name: sevSecGw
   value: highIssues
 - name: maxIssuesAllowed
-  value: 100
+  value: 10
 
 trigger:
 - master
@@ -58,27 +58,34 @@ steps:
 
 - powershell: |
     [XML]$xml=Get-Content "$(artifactFolder)\$(artifactName).ozasmt"
-    $highIssues = $xml.AssessmentRun.AssessmentStats.total_high_high_finding
-    $mediumIssues = $xml.AssessmentRun.AssessmentStats.total_high_med_finding
-    $lowIssues = $xml.AssessmentRun.AssessmentStats.total_high_low_finding
-    if (( "$highIssues" -gt "$(maxIssuesAllowed)" ) -and ( "$(sevSecGw)" -eq "highIssues" )) {
-      echo "There is $highIssues high issues and is allowed $(maxIssuesAllowed)"
-      echo "Security Gate build failed"
+    [int]$highIssues = $xml.AssessmentRun.AssessmentStats.total_high_finding
+    [int]$mediumIssues = $xml.AssessmentRun.AssessmentStats.total_med_finding
+    [int]$lowIssues = $xml.AssessmentRun.AssessmentStats.total_low_finding
+    [int]$totalIssues = $highIssues+$mediumIssues+$lowIssues
+    $maxIssuesAllowed = $maxIssuesAllowed -as [int]
+
+    write-host "There is $highIssues high issues, $mediumIssues medium issues and $lowIssues low issues."
+    write-host "The company policy permit less than $(maxIssuesAllowed) $(sevSecGw) severity."
+
+    if (( $highIssues -gt $(maxIssuesAllowed) ) -and ( "$(sevSecGw)" -eq "highIssues" )) {
+      write-host "Security Gate build failed";
       exit 1
-    }
-    elseif (( "$mediumIssues" -gt "$(maxIssuesAllowed)" ) -and ( "$(sevSecGw)" -eq "mediumIssues" )) {
-      echo "There is $mediumIssues medium issues and is allowed $(maxIssuesAllowed)"
-      echo "Security Gate build failed"
+      }
+    elseif (( $mediumIssues -gt $(maxIssuesAllowed) ) -and ( "$(sevSecGw)" -eq "mediumIssues" )) {
+      write-host "Security Gate build failed";
       exit 1
-    }
-    elseif (( "$lowIssues" -gt "$(maxIssuesAllowed)" ) -and ( "$(sevSecGw)" -eq "lowIssues" )) {
-      echo "There is $lowIssues low issues and is allowed $(maxIssuesAllowed)"
-      echo "Security Gate build failed"
+      }
+    elseif (( $lowIssues -gt $(maxIssuesAllowed) ) -and ( "$(sevSecGw)" -eq "lowIssues" )) {
+      write-host "Security Gate build failed";
       exit 1
-    }
-    write-host "There is $(highIssues) high issues, $(mediumIssues) medium issues and $(lowIssues) low issues"
-    write-host "The company policy permit less than $(maxIssuesAllowed) $(sevSecGw) severity"
-    write-host "Security Gate passed"
+      }
+    elseif (( $totalIssues -gt $(maxIssuesAllowed) ) -and ( "($sevSecGw)" -eq "totalIssues" )) {
+      write-host "Security Gate build failed";
+      exit 1
+      }
+    else{
+      write-host "Security Gate passed"
+      }
   displayName: 'Step 4 - Checking Security Gate'
 
 - task: PublishPipelineArtifact@1
