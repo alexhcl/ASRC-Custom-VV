@@ -56,6 +56,11 @@ steps:
     AppScanSrcCli scr script.scan
   displayName: 'Step 3 - Scanning artifact and publishing SAST result'
 
+- publish: $(Pipeline.Workspace)/s/$(artifactName).zip
+  artifact: $(artifactName).zip
+  continueOnError: On
+  displayName: 'Step 4 - Publishing scan result'
+
 - powershell: |
     [XML]$xml=Get-Content "$(artifactFolder)\$(artifactName).ozasmt"
     [int]$highIssues = $xml.AssessmentRun.AssessmentStats.total_high_finding
@@ -86,11 +91,6 @@ steps:
     else{
       write-host "Security Gate passed"
       }
-  displayName: 'Step 4 - Checking Security Gate'
-
-- task: PublishPipelineArtifact@1
-  inputs:
-    targetPath: '$(Pipeline.Workspace)/s/$(artifactName).zip'
-    publishLocation: 'pipeline'
+  displayName: 'Step 5 - Checking Security Gate'
 ```
 <br>Reference project: https://github.com/jayachandradev/Altroz
