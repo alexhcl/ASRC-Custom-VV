@@ -22,7 +22,7 @@ variables:
 - name: aseAppName
   value: AltoroJ
 - name: aseHostname
-  value: winappscan.lab.local
+  value: ase.lab.local
 - name: aseToken
   value: C:\ProgramData\HCL\AppScanSource\config\ounceautod.token
 - name: sevSecGw
