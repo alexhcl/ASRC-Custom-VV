@@ -22,13 +22,13 @@ variables:
 - name: aseAppName
   value: AltoroJ
 - name: aseHostname
-  value: ase.lab.local
+  value: winappscan.lab.local
 - name: aseToken
   value: C:\ProgramData\HCL\AppScanSource\config\ounceautod.token
 - name: sevSecGw
   value: highIssues
 - name: maxIssuesAllowed
-  value: 0
+  value: 100
 
 trigger:
 - master
@@ -61,23 +61,23 @@ steps:
     $highIssues = $xml.AssessmentRun.AssessmentStats.total_high_high_finding
     $mediumIssues = $xml.AssessmentRun.AssessmentStats.total_high_med_finding
     $lowIssues = $xml.AssessmentRun.AssessmentStats.total_high_low_finding
-    if (( "$highIssues" -gt "$maxIssuesAllowed" ) -and ( "$sevSecGw" -eq "highIssues" )) {
-      echo "There is $highIssues high issues and is allowed $maxIssuesAllowed"
+    if (( "$highIssues" -gt "$(maxIssuesAllowed)" ) -and ( "$(sevSecGw)" -eq "highIssues" )) {
+      echo "There is $highIssues high issues and is allowed $(maxIssuesAllowed)"
       echo "Security Gate build failed"
       exit 1
     }
-    elseif (( "$mediumIssues" -gt "$maxIssuesAllowed" ) -and ( "$sevSecGw" -eq "mediumIssues" )) {
-      echo "There is $mediumIssues medium issues and is allowed $maxIssuesAllowed"
+    elseif (( "$mediumIssues" -gt "$(maxIssuesAllowed)" ) -and ( "$(sevSecGw)" -eq "mediumIssues" )) {
+      echo "There is $mediumIssues medium issues and is allowed $(maxIssuesAllowed)"
       echo "Security Gate build failed"
       exit 1
     }
-    elseif (( "$lowIssues" -gt "$maxIssuesAllowed" ) -and ( "$sevSecGw" -eq "lowIssues" )) {
-      echo "There is $lowIssues low issues and is allowed $maxIssuesAllowed"
+    elseif (( "$lowIssues" -gt "$(maxIssuesAllowed)" ) -and ( "$(sevSecGw)" -eq "lowIssues" )) {
+      echo "There is $lowIssues low issues and is allowed $(maxIssuesAllowed)"
       echo "Security Gate build failed"
       exit 1
     }
-    write-host "There is $highIssues high issues, $mediumIssues medium issues and $lowIssues low issues"
-    write-host "The company policy permit less than $maxIssuesAllowed $sevSecGw severity"
+    write-host "There is $(highIssues) high issues, $(mediumIssues) medium issues and $(lowIssues) low issues"
+    write-host "The company policy permit less than $(maxIssuesAllowed) $(sevSecGw) severity"
     write-host "Security Gate passed"
   displayName: 'Step 4 - Checking Security Gate'
 
