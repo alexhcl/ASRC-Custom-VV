@@ -1,4 +1,4 @@
-# Integration AppScan Source (SAST) and AzureDevOps
+# AppScan Source (SAST) and AzureDevOps Integration
 </br>
 It will help to Integrate AppScan Source on AzureDevOps. It will enable AzureDevOps to start scan, generate report, publish results to AppScan Source Database and AppScan Enterprise and check for Security Gate.<br>
 <br>
